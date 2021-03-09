@@ -7,9 +7,6 @@ import 'package:intl/intl.dart';
 
 import '../../food.dart';
 
-// TODO: Create back button
-// TODO: Input validation (not null)
-
 class NewFood extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _NewFoodState();
@@ -20,11 +17,46 @@ class _NewFoodState extends State<NewFood> {
   String name;
   DateTime datetime;
 
+  void showAlertDialog(BuildContext context, String title, String message) {
+  // set up the button
+  Widget okButton = TextButton(
+    child: Text("OK"),
+    onPressed: () { 
+      Navigator.pop(context);
+    },
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(title),
+    content: Text(message),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text("Create new food entry"),
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+            },
+            child: Icon(
+              Icons.arrow_back
+            )
+          ),
         ),
         body: Form(
             child: Column(
@@ -96,6 +128,20 @@ class _NewFoodState extends State<NewFood> {
                   print(category);
                   print(name);
                   print(datetime);
+                  if(["", null, false, 0].contains(category)) {
+                    showAlertDialog(context, "Error", "Please select a category!");
+                    return;
+                  }
+                  
+                  if(["", null, false, 0].contains(name)) {
+                    showAlertDialog(context, "Error", "Please enter a food name!");
+                    return;
+                  }
+
+                  if(datetime == null) {
+                    showAlertDialog(context, "Error", "Please enter a date and time!");
+                    return;
+                  }
 
                   // Insert to box(db)
                   try {
