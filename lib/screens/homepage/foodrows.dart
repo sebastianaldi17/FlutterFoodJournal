@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:food_journal/screens/foodedit/editfood.dart';
 import 'package:food_journal/screens/foodentry/newfood.dart';
 import 'package:hive/hive.dart';
 
@@ -16,7 +17,8 @@ class _FoodRowsState extends State<FoodRows> {
 
   void _addFood() {
     // Navigate to newfood
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewFood()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => NewFood()));
   }
 
   Widget _buildEntries() {
@@ -36,7 +38,12 @@ class _FoodRowsState extends State<FoodRows> {
             ),
             onTap: () {
               // Navigate to editfood
-              // TODO: Crete editfood screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditFood(foodIndex: i),
+                ),
+              );
             },
           ),
         );
