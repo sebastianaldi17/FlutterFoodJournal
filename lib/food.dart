@@ -10,6 +10,8 @@ class Food {
   String name;
   @HiveField(2)
   DateTime foodDate;
+  @HiveField(3)
+  String id;
 
-  Food(this.name, this.category, this.foodDate);
+  Food(this.id, this.name, this.category, this.foodDate);
 }

@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import '../../food.dart';
+import '../../helper.dart';
 
 class NewFood extends StatefulWidget {
   @override
@@ -16,33 +17,6 @@ class _NewFoodState extends State<NewFood> {
   String category = 'Food';
   String name;
   DateTime datetime;
-
-  void showAlertDialog(BuildContext context, String title, String message) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: Text("OK"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        okButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,19 +98,19 @@ class _NewFoodState extends State<NewFood> {
                 onPressed: () {
                   // Validate
                   if (["", null, false, 0].contains(category)) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please select a category!");
                     return;
                   }
 
                   if (["", null, false, 0].contains(name)) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please enter a food name!");
                     return;
                   }
 
                   if (datetime == null) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please enter a date and time!");
                     return;
                   }
@@ -144,13 +118,14 @@ class _NewFoodState extends State<NewFood> {
                   // Insert to box(db)
                   try {
                     final foodBox = Hive.box('food');
-                    foodBox.add(new Food(name, category, datetime));
+                    final id = Helper.generateRandomString(8);
+                    foodBox.put(id, new Food(id, name, category, datetime));
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => MyHomePage()));
                   } catch (e) {
                     // Alert user (say something went wrong)
                     print(e);
-                    showAlertDialog(context, "Error", "An error occured while trying to create a new entry, please try again or reopen the app.");
+                    Helper.showAlertDialog(context, "Error", "An error occured while trying to create a new entry, please try again or reopen the app.");
                   }
                 },
                 child: Text('Add new food'),

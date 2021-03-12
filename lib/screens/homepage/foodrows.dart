@@ -5,8 +5,6 @@ import 'package:food_journal/screens/foodedit/editfood.dart';
 import 'package:food_journal/screens/foodentry/newfood.dart';
 import 'package:hive/hive.dart';
 
-import '../../food.dart';
-
 class FoodRows extends StatefulWidget {
   @override
   _FoodRowsState createState() => _FoodRowsState();
@@ -23,14 +21,18 @@ class _FoodRowsState extends State<FoodRows> {
 
   Widget _buildEntries() {
     final foodBox = Hive.box('food');
+    final foods = foodBox.values.toList();
+    foods.sort((a, b) {
+      return a.foodDate.compareTo(b.foodDate);
+    });
     return ListView.builder(
       padding: EdgeInsets.all(16),
       itemBuilder: (context, i) {
-        final food = foodBox.get(i) as Food;
+        final food = foods[i];
         return Card(
           child: ListTile(
             title: Text(
-              food.name + " - " + food.foodDate.toString(),
+              food.name + " - " + food.foodDate.toString() + " - " + food.id,
               style: _biggerFont,
             ),
             trailing: Icon(
@@ -41,14 +43,14 @@ class _FoodRowsState extends State<FoodRows> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditFood(foodIndex: i),
+                  builder: (context) => EditFood(foodId: food.id),
                 ),
               );
             },
           ),
         );
       },
-      itemCount: foodBox.length,
+      itemCount: foods.length,
     );
   }
 

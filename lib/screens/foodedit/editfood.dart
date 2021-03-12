@@ -6,54 +6,28 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import '../../food.dart';
+import '../../helper.dart';
 
 class EditFood extends StatefulWidget {
-  final int foodIndex;
+  final String foodId;
 
-  EditFood({Key key, @required this.foodIndex}) : super(key: key);
+  EditFood({Key key, @required this.foodId}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _EditFoodState(foodIndex);
+  State<StatefulWidget> createState() => _EditFoodState(foodId);
 }
 
 class _EditFoodState extends State<EditFood> {
-  int foodIndex;
+  String foodId;
   String category = 'Food';
   String name;
   DateTime datetime;
 
-  void showAlertDialog(BuildContext context, String title, String message) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: Text("OK"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        okButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  _EditFoodState(int foodIndex) {
-    this.foodIndex = foodIndex;
+  _EditFoodState(String foodId) {
+    this.foodId = foodId;
 
     final foodBox = Hive.box('food');
-    final food = foodBox.get(foodIndex) as Food;
+    final food = foodBox.get(foodId) as Food;
 
     category = food.category;
     datetime = food.foodDate;
@@ -76,13 +50,13 @@ class _EditFoodState extends State<EditFood> {
               onTap: () {
                 try {
                   final foodBox = Hive.box('food');
-                  foodBox.deleteAt(foodIndex);
+                  foodBox.delete(foodId);
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => MyHomePage()));
                 } catch (e) {
                   // Alert user (say something went wrong)
                   print(e);
-                  showAlertDialog(context, "Error", "An error occured while trying to delete, please try again or reopen the app.");
+                  Helper.showAlertDialog(context, "Error", "An error occured while trying to delete, please try again or reopen the app.");
                 }
               },
               child: Icon(Icons.delete_forever),
@@ -159,33 +133,33 @@ class _EditFoodState extends State<EditFood> {
                 onPressed: () {
                   // Validate
                   if (["", null, false, 0].contains(category)) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please select a category!");
                     return;
                   }
 
                   if (["", null, false, 0].contains(name)) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please enter a food name!");
                     return;
                   }
 
                   if (datetime == null) {
-                    showAlertDialog(
+                    Helper.showAlertDialog(
                         context, "Error", "Please enter a date and time!");
                     return;
                   }
 
                   try {
                     final foodBox = Hive.box('food');
-                    foodBox.putAt(
-                        foodIndex, new Food(name, category, datetime));
+                    foodBox.put(
+                        foodId, new Food(foodId, name, category, datetime));
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => MyHomePage()));
                   } catch (e) {
                     // Alert user (say something went wrong)
                     print(e);
-                    showAlertDialog(context, "Error", "An error occured while trying to save, please try again or reopen the app.");
+                    Helper.showAlertDialog(context, "Error", "An error occured while trying to save, please try again or reopen the app.");
                   }
                 },
                 child: Text('Save changes'),
